@@ -39,7 +39,7 @@ Affrontare numericamente problemi di meccanica quantistica rende possibile trova
     \label{hsys}
 \end{equation}
 
-Per ridurre il problema a una formulazione discreta è ridurre la cardinalità da continua a finita, passando dalla retta reale a un reticolo limitato di \(N\) punti di passo \(a\) come illustrato in Fig. \ref{1Dlattice}: così facendo il problema è definito su un grafo e può essere affrontato con gli strumenti matematici propri di questa struttura, tra i quali spiccano le matrici. 
+Per ridurre il problema a una formulazione discreta è ridurre la cardinalità da continua a finita, passando dalla retta reale a un reticolo limitato di \(N\) punti di passo \(a\) come illustrato in Fig. \ref{1Dlattice}: così facendo il problema è definito su un grafo e può essere affrontato con gli strumenti matematici propri di questa struttura, tra i quali spiccano le matrici.
 
 \begin{figure}
     \centering
@@ -55,7 +55,7 @@ Per ridurre il problema a una formulazione discreta è ridurre la cardinalità d
     \label{1Dlattice}
 \end{figure}
 
-Sotto queste condizioni infatti \(\hat{H}\) in (\ref{hsys}) è degradato da operatore a matrice quadrata finita, rendendo il problema affrontabile numericamente. Per farlo è utile spostarsi nelle unità naturali del problema: definendo \( \frac{\hbar^2}{m} = 1\) la forma in cui è comodo scrivere il problema è riportata in (\ref{numver}). In questo modo è facile distinguere l'operatore cinetico dal potenziale generico e distinguere possibili linee d'intervento per l'implementazione delle soluzioni numeriche. 
+Sotto queste condizioni infatti \(\hat{H}\) in (\ref{hsys}) è degradato da operatore a matrice quadrata finita, rendendo il problema affrontabile numericamente. Per farlo è utile spostarsi nelle unità naturali del problema: definendo \( \frac{\hbar^2}{m} = 1\) la forma in cui è comodo scrivere il problema è riportata in (\ref{numver}). In questo modo è facile distinguere l'operatore cinetico dal potenziale generico e distinguere possibili linee d'intervento per l'implementazione delle soluzioni numeriche.
 
 \begin{equation}
     \Bigg[-\frac{d^2}{2dx^2}+V(x)\Bigg]\psi=E\psi
@@ -64,7 +64,7 @@ Sotto queste condizioni infatti \(\hat{H}\) in (\ref{hsys}) è degradato da oper
 
 \subsection{Rappresentazioni discrete dell'operatore cinetico \(H_0\)}
 
-Dalla (\ref{numver}) si vede chiaramente come l'operatore cinetico\(H_0\) sia un laplaciano discreto \(\Delta\) a meno di una costante moltiplicativa. La costruzione di questa matrice può essere ottenuta in due modi principali: come sviluppo di Taylor o  sfruttando la diagonalità di \(H_0\) nello spazio dei momenti coniugati tramite la trasformata di Fourier. Pregi e difetti di entrambi gli approcci verranno discussi nelle prossime sezioni 
+Dalla (\ref{numver}) si vede chiaramente come l'operatore cinetico\(H_0\) sia un laplaciano discreto \(\Delta\) a meno di una costante moltiplicativa. La costruzione di questa matrice può essere ottenuta in due modi principali: come sviluppo di Taylor o  sfruttando la diagonalità di \(H_0\) nello spazio dei momenti coniugati tramite la trasformata di Fourier. Pregi e difetti di entrambi gli approcci verranno discussi nelle prossime sezioni
 
 \subsubsection{L'operatore cinetico come sviluppo di Taylor}
 
@@ -90,7 +90,7 @@ L'approssimazione di ordine arbitrario indicata come
                     &+ \dots + \alpha_n[\psi(x+na)+\psi(x-na)] \\
     \end{aligned}
 \end{equation}
-assume la forma generica 
+assume la forma generica
 \begin{align}
     (\Delta\psi)_j \simeq
     \frac{1}{a^2} \sum_{k=-n}^{n}\bigg(\alpha_{|k|}\psi_{j+k}\bigg)
@@ -123,7 +123,7 @@ Avendo a disposizione degli algoritmi sofisticati, come la FFT, per la trasforma
 
 \subsubsection{Le condizioni al contorno}
 
-Le matrici così costruite considerano il problema definito su un grafo illimitato, a differenza di quello su cui è opportuno definirlo, che è di lunghezza finita: per compiere questo ultimo passaggio è necessario capire come imporre le condizioni al contorno al problema modificando opportunamente la matrice \(H\). 
+Le matrici così costruite considerano il problema definito su un grafo illimitato, a differenza di quello su cui è opportuno definirlo, che è di lunghezza finita: per compiere questo ultimo passaggio è necessario capire come imporre le condizioni al contorno al problema modificando opportunamente la matrice \(H\).
 
 Le condizioni al contorno possibili sono due: le condizione al contorno periodiche o quelle di Dirichlet. Per risolvere il problema è particolarmente utile ragionare sul grafo: per rendere il grafo periodico è necessario collegare i due estremi aperti del reticolo tra loro, imponendo \(\psi_j=\psi_{j+N}\).
 Per applicare le condizioni di Dirichlet invece si collegano i due estremi aperti a loro stessi, o a dei punti "virtuali" che impongano \(\psi_0=\psi_{N+1}=0\).
@@ -138,7 +138,7 @@ Con il metodo di costruzione che sfrutta la trasformata di Fourier è impossibil
 
 \subsection{Valutazione quantitativa su problemi con potenziale armonico}
 
-Si procede alla valutazione dell'efficienza e dell'efficacia di questi metodi comparando i risultati nella ricerca degli autovalori di un problema con potenziale di tipo armonico, di forma \(V=\frac{1}{2}\omega^2 x^2\), usando come parametri di valutazione la precisione rispetto alle soluzioni analitiche e il tempo d'esecuzione. 
+Si procede alla valutazione dell'efficienza e dell'efficacia di questi metodi comparando i risultati nella ricerca degli autovalori di un problema con potenziale di tipo armonico, di forma \(V=\frac{1}{2}\omega^2 x^2\), usando come parametri di valutazione la precisione rispetto alle soluzioni analitiche e il tempo d'esecuzione.
 
 L'implementazione di entrambi i metodi è affidata a \verb|harmtest.m|, che si basa su chiamate multiple di \verb|makeh.m|, cui è affidata l'implementazione degli algoritmi, al variare di un singolo parametro, ovvero \verb|lap_approx|, che determina il metodo di costruzione della matrice H. Nella convenzione scelta nel caso questo valore sia 0 verrà costruita tramite trasformazione di Fourier, altrimenti per valori maggiori \verb|lap_approx| rappresenta la dimensione del vettore \(\alpha\) come definito in (\ref{Asys}), legata al numero di diagonali dalla relazione \(n_d=(2 \cdot \dim(\alpha)-1)\).
 
@@ -168,7 +168,7 @@ In Fig. \ref{deig} è ben evidenziato come l'algoritmo che sfrutta la trasformat
 In Fig. \ref{teig} è mostrato il costo computazionale valutato come tempo medio d'esecuzione su 15 tentativi dei vari metodi: il metodo di Fourier è un'ordine di grandezza più lento del peggior caso possibile del metodo n-diagonale, ma l'enorme vantaggio in termini di precisione, che raggiunge anche i dieci ordini di grandezza, giustifica la differenza.
 
 \section{Un caso di studio: il potenziale \(|x|^\alpha\)}
-Un problema di particolare interesse fisico è 
+Un problema di particolare interesse fisico è
 \begin{equation*}
     H=-\frac{\hbar^2}{2m}\frac{d^2}{dx^2}+\frac{1}{2}g|x|^\alpha
 \end{equation*}
@@ -183,7 +183,7 @@ Prenderemo in analisi una famiglia di problemi con \(\alpha>0\) con particolare 
     \label{borsom}
 \end{equation}
 
-Fissando un valore d'energia \(E\) si identifica, data la simmetria del potenziale, un intorno di 0 di raggio \(x_0\). Da questo fatto si può, sfruttando la conservazione l'energia, derivare \(E=\frac{1}{2}|x|^\alpha\). Dato che \(p=\sqrt{2E-|x|^\alpha}\), ridefinendo \(\lambda = \frac{x}{x_0}\) si può riscrivere la (\ref{borsom}) come 
+Fissando un valore d'energia \(E\) si identifica, data la simmetria del potenziale, un intorno di 0 di raggio \(x_0\). Da questo fatto si può, sfruttando la conservazione l'energia, derivare \(E=\frac{1}{2}|x|^\alpha\). Dato che \(p=\sqrt{2E-|x|^\alpha}\), ridefinendo \(\lambda = \frac{x}{x_0}\) si può riscrivere la (\ref{borsom}) come
 \begin{equation}
     I = 4x^{1+\frac{\alpha}{2}}_0\int_0^1\sqrt{1-\lambda^\alpha}d\lambda
 \end{equation}
@@ -203,7 +203,9 @@ L'espressione per le energie semiclassiche è quindi
     n&=1,2,\dots\\
 \end{align*}
 
-Dalla formula semiclassica è facile vedere come per \(\alpha=2\) i valori coincidano con gli autovalori del sistema calcolati per via analitica e già usati come termine di paragone in precedenza.
+Dalla formula semiclassica è facile vedere come per \(\alpha=2\) i valori coincidano con gli autovalori del sistema calcolati per via analitica e già usati come termine di paragone in precedenza. Non avendo questa possibilità per gli altri valori di \(\alpha\) si rende necessario trovare una maniera alternativa per verificare la coerenza dei risultati.
+
+Data la chiara superiorità del metodo di Fourier illustrato in precedenza si userà questo metodo, che per una lunga serie di autovalori è in grado di mostare solo errori dovuti ai conti in virgola mobile, cercando di stimare l'intervallo di affidabilità del metodo.
 
 \section{L'equazione di Schroedinger dipendente dal tempo}
 \begin{equation}
