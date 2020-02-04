@@ -1,4 +1,4 @@
-\documentclass[a4paper,11pt,twoside]{article}
+\documentclass[a4paper,11pt,twoside,twocolumn]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -30,7 +30,7 @@ Affrontare numericamente problemi di meccanica quantistica rende possibile trova
         \hat{H} &=\hat{H}_0+V \\
         \hat{H}_0 &=-\frac{\hbar}{2m} \frac{d^2}{dx^2}
     \end{cases}
-    \rightarrow
+    \to
     \begin{cases}
         H\psi_n &=\lambda_n\psi_n \\
         H &=H_0+V \\
@@ -64,7 +64,7 @@ Sotto queste condizioni infatti \(\hat{H}\) in (\ref{hsys}) è degradato da oper
 
 \subsection{Rappresentazioni discrete dell'operatore cinetico \(H_0\)}
 
-Dalla (\ref{numver}) si vede chiaramente come l'operatore cinetico\(H_0\) sia un laplaciano discreto \(\Delta\) a meno di una costante moltiplicativa. La costruzione di questa matrice può essere ottenuta in due modi principali: come sviluppo di Taylor o  sfruttando la diagonalità di \(H_0\) nello spazio dei momenti coniugati tramite la trasformata di Fourier. Pregi e difetti di entrambi gli approcci verranno discussi nelle prossime sezioni
+Dalla (\ref{numver}) si vede chiaramente come l'operatore cinetico\(H_0\) sia un laplaciano discreto \(\Delta\) a meno di una costante moltiplicativa. La costruzione di questa matrice può essere ottenuta in due modi principali: come sviluppo di Taylor o  sfruttando la diagonalità di \(H_0\) nello spazio dei momenti coniugati tramite la trasformata di Fourier. Pregi e difetti di entrambi gli approcci verranno discussi nelle prossime sezioni.
 
 \subsubsection{L'operatore cinetico come sviluppo di Taylor}
 
@@ -131,16 +131,16 @@ Per applicare le condizioni di Dirichlet invece si collegano i due estremi apert
 All'atto pratico l'implementazione delle condizioni al contorno si concretizza in modi diversi a seconda del metodo di costruzione.
 
 \paragraph{Le condizioni al contorno nella matrice n-diagonale}
-Con il metodo di costruzione n-diagonale si può interpretare \(H\) come una sorta di matrice di adiacenza del grafo: in questo caso le condizioni Dirichlet vengono imposte ponendo uguali a zero gli opportuni vertici, o imponendo una struttura "ad anello", ovvero negli stessi vertici posti a zero si impongo valori tali che si possa ripetere la matrice stanti delle permutazioni di righe.
+Con il metodo di costruzione n-diagonale si può interpretare \(H\) come una sorta di matrice di adiacenza del grafo: in questo caso le condizioni Dirichlet vengono imposte ponendo uguali a zero gli opportuni vertici, o imponendo una struttura "ad anello", ovvero negli stessi vertici posti a zero si impongono valori tali che si possa ripetere la matrice stanti delle permutazioni cicliche delle righe.
 
 \paragraph{Le condizioni al contorno nella matrice di Fourier}
-Con il metodo di costruzione che sfrutta la trasformata di Fourier è impossibile procedere direttamente come illustrato sopra data la doppia trasformazione. Metodo ifft sinft.
+Con il metodo di costruzione che sfrutta la trasformata di Fourier è impossibile procedere direttamente come illustrato sopra: è necessario dunque, nel caso delle condizioni periodiche, adattare l'idea di permutazioni tramite una traslazione con Fourier tramite la funzione \verb|fftshift.m|.
 
 \subsection{Valutazione quantitativa su problemi con potenziale armonico}
 
 Si procede alla valutazione dell'efficienza e dell'efficacia di questi metodi comparando i risultati nella ricerca degli autovalori di un problema con potenziale di tipo armonico, di forma \(V=\frac{1}{2}\omega^2 x^2\), usando come parametri di valutazione la precisione rispetto alle soluzioni analitiche e il tempo d'esecuzione.
 
-L'implementazione di entrambi i metodi è affidata a \verb|harmtest.m|, che si basa su chiamate multiple di \verb|makeh.m|, cui è affidata l'implementazione degli algoritmi, al variare di un singolo parametro, ovvero \verb|lap_approx|, che determina il metodo di costruzione della matrice H. Nella convenzione scelta nel caso questo valore sia 0 verrà costruita tramite trasformazione di Fourier, altrimenti per valori maggiori \verb|lap_approx| rappresenta la dimensione del vettore \(\alpha\) come definito in (\ref{Asys}), legata al numero di diagonali dalla relazione \(n_d=(2 \cdot \dim(\alpha)-1)\).
+L'implementazione di entrambi i metodi è affidata a \verb|harmostest.m|, che si basa su chiamate multiple di \verb|makeh.m|, cui è affidata l'implementazione degli algoritmi, al variare di un singolo parametro, ovvero \verb|lap_approx|, che determina il metodo di costruzione della matrice H. Nella convenzione scelta nel caso questo valore sia 0 verrà costruita tramite trasformazione di Fourier, altrimenti per valori maggiori \verb|lap_approx| rappresenta la dimensione del vettore \(\alpha\) come definito in (\ref{Asys}), legata al numero di diagonali dalla relazione \(n_d=(2 \cdot \dim(\alpha)-1)\).
 
 \begin{figure}
     \centering
@@ -196,31 +196,138 @@ L'integrale (\ref{borsom}) è affrontabile numericamente, restituendo come risul
 
 L'espressione per le energie semiclassiche è quindi
 
-\begin{align*}
+\begin{equation}
+    \begin{aligned}
     E_n & =
     \frac{1}{2}\Bigg(\frac{\pi\alpha}{2\beta\big(\frac{3}{2},\frac{1}{\alpha}\big)}\Bigg)^\frac{2\alpha}{\alpha+2} &\Bigg(n+\frac{1}{2}\Bigg)^\frac{2\alpha}{\alpha+2} \\
     :&= c_{\alpha} &\Bigg(n+\frac{1}{2}\Bigg)^\frac{2\alpha}{\alpha+2} \\
     n&=1,2,\dots\\
-\end{align*}
+    \end{aligned}
+    \label{scenergy}
+\end{equation}
 
-Dalla formula semiclassica è facile vedere come per \(\alpha=2\) i valori coincidano con gli autovalori del sistema calcolati per via analitica e già usati come termine di paragone in precedenza. Non avendo questa possibilità per gli altri valori di \(\alpha\) si rende necessario trovare una maniera alternativa per verificare la coerenza dei risultati.
+Dalla (\ref{scenergy}) si riesce a ottenere una rappresentazione simbolica degli autovalori per \( \alpha \neq 2 \): per studiarne l'accuratezza si procederà a un confronto tra il metodo numerico, di cui si è studiata l'efficacia, indipendente da \(\alpha\), nella sezione 1.2 nel caso specifico in cui \(\alpha = 2 \).
 
-Data la chiara superiorità del metodo di Fourier illustrato in precedenza si userà questo metodo, che per una lunga serie di autovalori è in grado di mostare solo errori dovuti ai conti in virgola mobile, cercando di stimare l'intervallo di affidabilità del metodo.
+Questo compito è svolto da \verb|alphatest.m| che adotta come metrica di valutazione la tolleranza relativa, fissata come parametro in entrata, sul rapporto tra valore numerico e valore secondo Bohr-Sommerfeld. Nelle situazioni analizzate, i cui risultati sono illustrati in Fig. \ref{f05}, Fig. \ref{f15} e Fig. \ref{f25}, la tolleranza è stata fissata a un errore relativo \(e_{rel}=10^{-4}\) sul rapporto: al di sotto di questo valore i due metodi vengono ritenuti compatibili. Per valutare il grado di compatibilità registrato con questo criterio al crescere della dimensione della matrice \(H\) si riporta sul grafico il numero d'indice del primo e dell'ultimo autovalore che soddisfano la tolleranza relativa.
+
+Data la chiara superiorità del metodo di Fourier illustrato in precedenza si userà questo metodo, che per una lunga serie di autovalori è in grado di mostare solo errori dovuti all'arrotondamento, con condizioni al contorno periodiche. 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\columnwidth]{a05}
+    \caption{Studio di potenziale con cuspide}
+    \label{f05}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\columnwidth]{a15}
+    \caption{Studio di potenziale con punto angoloso: per \(n=9\) il programma alphatest non è stato in grado di trovare autovalori compatibili nella tolleranza data}
+    \label{f15}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\columnwidth]{a25}
+    \caption{Studio di potenziale continuo}
+    \label{f25}
+\end{figure}
+
+Per lo studio sono state scelti tre valori, \(\alpha=0.5\), \(\alpha=1.5\) e \(\alpha=2.5\), che permettono di studiare il comportamento degli autovalori in tre condizoni distinte: una cuspide e un punto angoloso per \(x=0\) nei primi due casi, continuo nel terzo. 
+
+Con \(\alpha=0.5\) si osserva come gli estremi dell'intervallo di autovalori compatibili crescano linearmente al crescere della dimensione della matrice, con un aumento complessivo dovuto all'incedere più rapido dell'estremo superiore.
+
+Con \(\alpha=1.5\), valore che implica l'esistenza di un punto angoloso per \(x=0\), si osserva un deciso degrado nell'intervallo di compatibilità tra autovalori al punto che per il valore di dimensione più basso selezionato, \(2^9\), imputabile a una visibile fluttuazione degli autovalori che si smorza per valori più alti ma che comunque causa un numero di autovalori in accordo di un ordine di grandezza più basso.
+
+Infine con \(\alpha=2.5\), con un potenziale continuo, si torna a un'evoluzione più regolare, con un numero di autovalori compatibili simile al caso per cui \(\alpha=0.5\), caratterizzata dal fatto che l'estremo inferiore dell'intervallo non cambi al variare della dimensione.
 
 \section{L'equazione di Schroedinger dipendente dal tempo}
 \begin{equation}
     \dot{\psi}=-iH\psi
 \end{equation}
-Esistono diversi approcci per la soluzione numerica dell'equazione di Schroedinger dipendente dal tempo ma in generale gli approcci possono essere catalogati in due categorie principali: i metodi che si basano sulla risoluzione dell sistema di equazioni a derivate parziali e i metodi che si basano sul calcolo di una matrice \(U\) tale che \(\psi(t)=U\psi(0)\).
+Esistono diversi approcci per la soluzione numerica dell'equazione di Schroedinger dipendente dal tempo ma in generale gli approcci possono essere catalogati in due categorie principali: i metodi che si basano sulla risoluzione diretta del sistema e i metodi che si basano sul calcolo di una matrice \(U\) tale che \(\psi(t)=U\psi(0)\).
 
 Di seguito verranno studiati tre approcci: uno del primo tipo, che si basa sulla riduzione del problema alle derivate parziali, e due del secondo, usando alternativamente un algoritmo simplettico o il calcolo di esponenziale di matrice.
 
-\subsection{Soluzione tramite equazione differenziale ordinaria}
+\paragraph{Soluzione tramite algoritmo per equazioni differenziali ordinarie}
 
-\subsection{Soluzione tramite esponenziale di matrici}
+Per effetto della discretizzazione, l'equazione di Schroedinger definito su matrici finite è 
+\begin{equation}
+    \dot{\psi}_n=-i\sum_l H_{nl}\psi_{l}
+    \label{tschr}
+\end{equation}
+un problema affrontabile tramite i vari \textit{ODE solver} disponibili per MATLAB, come \verb|ode113| o \verb|ode45|.
 
-\subsection{Soluzione tramite algoritmo simplettico}
+\paragraph{Soluzione tramite esponenziale di matrici}
 
-\section{Un caso di studio: il potenziale \(pinco pallino\)}
-Delte finte e polinomi
+Al netto della discretizzazione l'equazione di Schroedinger dipendente dal tempo ammette come soluzione simbolica
+\begin{equation}
+    \psi(t)=e^{-iHt}\psi(0)
+    \label{expm}
+\end{equation}
+affrontabile numericamente grazie alla funzione di MATLAB \verb|expm|, in grado di calcolare l'esponenziale di una matrice.
+
+\paragraph{Soluzione tramite algoritmo simplettico}
+
+Così come è utile sfruttare, tramite la trasformata di Fourier, nella definizione della matrice \(H\) il fatto che \(T\) sia diagonale nello spazio dei momenti e \(V\) lo sia nello spazio delle posizioni, è utile cercare di riformulare (\ref{expm}) in modo di poter sfruttare questa proprietà.
+
+Partendo dalla (\ref{expm}) si può scrivere infatti, partendo da \(H=T+V\) e usando le proprietà degli esponenziali
+\begin{equation}
+    e^{-iHt}=\lim_{n \to + \infty} \Bigg( e^{-iT\frac{t}{n}}e^{-iV\frac{t}{n}}\Bigg)^n
+\end{equation}
+da cui, definendo la variabile \( \tau := nt \), si ottiene
+\begin{equation}
+    \begin{aligned}
+        \tilde{U}(t) &:= e^{-i\tilde{H}\tau} \\
+                     &:= e^{-iV\frac{\tau}{2}} e^{-iT\tau} e^{-iV\frac{\tau}{2}} \\
+    \end{aligned}
+\end{equation}
+
+Ora, dato che per definizione \(\tilde{U}(-\tau)=\big(\tilde{U}(\tau)\big)^{-1}\), si possono riscrivere 
+\begin{align*}
+    \tilde{H}(\tau)&=H+O(\tau^2)\\
+    \tilde{U}(\tau)&=U(\tau)(1+O(\tau^3)\\
+\end{align*}
+e si può sostituire nella (\ref{expm}) grazie alla ridefinzione di \(\tau\) che é tale che per \(n=\frac{t}{\tau}\) sia vero che \(U(t)\simeq\big(\tilde{U}(\tau)\big)^n\).
+
+Date quindi le rispettive diagonalità si può usare la trasfromata di Fourier diretta e inversa per scrivere
+\begin{equation}
+    \tilde{U}(\tau)=e^{-iV\frac{\tau}{2}}\bar{F}\bigg(e^{-iT\tau}F(e^{-iV\frac{\tau}{2}})\bigg)
+\end{equation}
+
+\section{Studio con potenziale}
+Si procede dunque allo studio di questi metodi con una potenziale di prova per svolgere confronti. L'implementazione è affidata a due file: \verb|bellcloset.m| cui spetta il calcolo delle soluzioni e \verb|bellplot.m| cui spetta la rappresentazione delle stesse. Entrambi i programmi sono in grado di gestire input e output tramite strutture: questa caratteristica permette di confrontare rapidamente i risultati tramite lo script \verb|belltest.m|.
+
+Il potenziale scelto è 
+\[
+V(x)=-\arctan(x)+\mathcal{H}(x+1)+\frac{\pi}{2}
+\]
+dove con \(\mathcal{H}\) si indica l'approssimazione delle funzione a gradino unitario di Heaviside implementata in MATLAB. Le motivazioni dietro questa scelta sono il voler selezionare un potenziale che presentasse difficoltà di calcolo numerico, come delle discontinuità, che non avesse soluzioni analitiche, ma che allo stesso tempo non presentasse tempi di esecuzione con il metodo \textit{ode}, prono a questo problema nel caso di potenziali con approssimazioni numeriche della Delta di Dirac, eccessivamente lunghi.
+
+Il potenziale viene affrontato con tutti i metodi elencati per un intervallo di tempo \(t=1.5\) a partire da \(\psi_0 = e^{-x^2}\) con condizioni al contorno di Dirichlet.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\columnwidth]{hexp}
+    \caption{Studio con metodo \textit{expm}}
+    \label{hexp}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\columnwidth]{hsyp}
+    \caption{Studio con metodo simplettico}
+    \label{hsyp}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\columnwidth]{hode}
+    \caption{Studio con metodo \textit{ode solver}}
+    \label{hode}
+\end{figure}
+
+Dai risultati di \verb|belltest.m| la deviazione più facile da osservare è in \ref{hode}: il metodo \textit{ode} non è in grado di conservare l'unitarietà di H, violando la conservazione dell'energia anche su tempi estremamente brevi.
+
+Nonostante questo evidente difetto si può osservare come tutti e tre i simulatori siano in grado di restituire risultati qualitativamente confrontabili, e come in tutti e tre siano osservabili gli effetti di bordo e del gradino di potenziale.
+
 \end{document}
